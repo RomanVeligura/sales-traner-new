@@ -1,0 +1,10 @@
+{
+  "name": "interactive-sales-trainer-backend",
+  "version": "1.0.0",
+  "description": "Serverless API for the Interactive Sales Trainer application.",
+  "main": "index.js",
+  "dependencies": {
+    "@google/generative-ai": "^0.2.1"
+  }
+}
+
