@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Продвинутые техники продаж авто с пробегом</title>
+    <meta name="description" content="Интерактивная методичка и ИИ-тренажер для современных консультантов по продажам автомобилей с пробегом.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+            color: #1a202c;
+        }
+        .nav-link {
+            transition: all .2s ease-in-out;
+            border-left: 3px solid transparent;
+        }
+        .nav-link.active {
+            color: #2563eb;
+            border-left-color: #2563eb;
+            background-color: #eff6ff;
+            transform: translateX(2px);
+        }
+        .nav-link:hover {
+            color: #2563eb;
+            background-color: #eff6ff;
+        }
+        .nav-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+        .nav-toggle.open .nav-submenu {
+            max-height: 500px;
+        }
+        .chevron-nav {
+            transition: transform 0.3s ease;
+        }
+        .nav-toggle.open .chevron-nav {
+            transform: rotate(90deg);
+        }
+        .nav-link-parent:hover {
+            background-color: #eff6ff;
+        }
+        .card {
+            transition: box-shadow .3s ease-in-out;
+        }
+        .card-header {
+            cursor: pointer;
+        }
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .5s cubic-bezier(.4, 0, .2, 1);
+        }
+        .card.open .card-content {
+            max-height: 2500px;
+        }
+        .chevron {
+            transition: transform .3s ease-in-out;
+        }
+        .card.open .chevron {
+            transform: rotate(180deg);
+        }
+        blockquote {
+            border-left: 4px solid #dbeafe;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: #4a5568;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .chat-bubble {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 20px;
+        }
+        .user-bubble {
+            background-color: #3b82f6;
+            color: #fff;
+            align-self: flex-end;
+        }
+        .ai-bubble {
+            background-color: #e5e7eb;
+            color: #1f2937;
+            align-self: flex-start;
+        }
+        #back-to-top {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.3s, visibility 0.3s;
+            opacity: 0;
+            visibility: hidden;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        #back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 600px;
+            width: 90%;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+        .correct-answer { background-color: #dcfce7; }
+        .incorrect-answer { background-color: #fee2e2; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Продвинутые техники продаж</h1>
+            <p class="text-lg text-gray-600">Интерактивная методичка для доверенного консультанта</p>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-10">
+            <aside class="lg:w-1/4 lg:sticky top-10 self-start">
+                <nav class="bg-white rounded-lg shadow-sm p-4">
+                    <h3 class="font-bold text-lg mb-4 px-2">Разделы</h3>
+                    <ul class="space-y-1" id="navigation">
+                        <li class="nav-toggle">
+                            <div class="nav-link-parent flex justify-between items-center cursor-pointer p-2 rounded-md">
+                                <span class="font-bold text-gray-800">Этапы работы с клиентом</span>
+                                <svg class="w-4 h-4 chevron-nav text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </div>
+                            <ul class="nav-submenu ml-2 mt-1 space-y-1">
+                                <li><a href="#stage1" class="nav-link block font-medium text-gray-600 p-2 rounded-md">1. Цифровое рукопожатие</a></li>
+                                <li><a href="#stage2" class="nav-link block font-medium text-gray-600 p-2 rounded-md">2. Первые 5 минут</a></li>
+                                <li><a href="#stage3" class="nav-link block font-medium text-gray-600 p-2 rounded-md">3. Совместное исследование</a></li>
+                                <li><a href="#stage4" class="nav-link block font-medium text-gray-600 p-2 rounded-md">4. Доказательная презентация</a></li>
+                                <li><a href="#stage5" class="nav-link block font-medium text-gray-600 p-2 rounded-md">5. Переговоры о ценности</a></li>
+                                <li><a href="#stage6" class="nav-link block font-medium text-gray-600 p-2 rounded-md">6. Управление возражениями</a></li>
+                                <li><a href="#stage7" class="nav-link block font-medium text-gray-600 p-2 rounded-md">7. Закрытие сделки</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#ai-trainer-section" class="nav-link block font-medium text-gray-600 p-2 rounded-md"><strong>🤖 ИИ-Тренажер</strong></a></li>
+                        <li><a href="#analysis-section" class="nav-link block font-medium text-gray-600 p-2 rounded-md"><strong>📊 Анализ диалога</strong></a></li>
+                        <li><a href="#library-section" class="nav-link block font-medium text-gray-600 p-2 rounded-md"><strong>📚 Библиотека возражений</strong></a></li>
+                        <li><a href="#objection-generator-section" class="nav-link block font-medium text-gray-600 p-2 rounded-md"><strong>✨ Генератор возражений</strong></a></li>
+                        <li><a href="#knowledge-section" class="nav-link block font-medium text-gray-600 p-2 rounded-md"><strong>🧠 База знаний</strong></a></li>
+                        <li><a href="#mistakes-section" class="nav-link block font-medium text-gray-600 p-2 rounded-md"><strong>🚫 Разбор ошибок</strong></a></li>
+                        <li><a href="#quiz-section" class="nav-link block font-medium text-gray-600 p-2 rounded-md"><strong>📝 Тест</strong></a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <main class="lg:w-3/4">
+                <section id="paradigm" class="bg-white p-8 rounded-lg shadow-md mb-10">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Новая парадигма: от продавца к консультанту</h2>
+                    <p class="text-gray-700 leading-relaxed">Современный клиент провел десятки часов в интернете, изучил обзоры и знает о типичных "болячках" модели не хуже вас. Он приходит не за информацией, а за <strong>подтверждением своего выбора и поиском доверия</strong>. Ваша задача — не "продать" ему автомобиль, а помочь <strong>уверенно и безопасно его купить</strong>.</p>
+                </section>
+                
+                <div class="space-y-8" id="stages-container">
+                </div>
+                
+                <section id="ai-trainer-section" class="scroll-mt-10 pt-10">
+                    <div class="mb-8">
+                        <h3 class="text-3xl font-bold text-gray-800 mb-2">🤖 Интерактивный тренажер</h3>
+                        <p class="text-gray-600 leading-relaxed">Отточите свои навыки в диалоге с виртуальным клиентом.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+                        <h4 class="text-xl font-bold text-gray-800 mb-4">1. Настройка сценария</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="scenario-input" class="block text-sm font-medium text-gray-700 mb-1">Опишите клиента:</label>
+                                <input type="text" id="scenario-input" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Например: молодая семья ищет внедорожник">
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button id="create-scenario-btn" class="bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700">Создать</button>
+                                <button id="random-scenario-btn" class="bg-gray-200 text-gray-800 font-semibold px-5 py-2 rounded-lg hover:bg-gray-300">✨ Случайный</button>
+                            </div>
+                        </div>
+                        <div id="scenario-output" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 hidden"></div>
+                    </div>
+                    <div id="dialogue-card" class="card bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+                        <div class="card-header p-6 flex justify-between items-center">
+                            <h4 class="text-xl font-bold text-gray-800">2. Диалог с клиентом</h4>
+                            <span class="chevron text-2xl text-blue-500">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <div id="chat-window" class="p-4 h-96 overflow-y-auto flex flex-col space-y-4"></div>
+                            <div class="p-4 border-t border-gray-200 flex items-center gap-2">
+                                <input type="text" id="chat-input" class="flex-grow border border-gray-300 rounded-lg px-4 py-2" placeholder="Начните диалог..." disabled>
+                                <button id="improve-chat-btn" class="bg-yellow-400 text-yellow-900 font-semibold px-4 py-2 rounded-lg hover:bg-yellow-500 disabled:bg-gray-400" disabled title="Улучшить ответ с помощью ИИ">✨</button>
+                                <button id="chat-send" class="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg disabled:bg-gray-400" disabled>Отправить</button>
+                                <button id="end-chat-btn" class="bg-red-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-red-600 disabled:bg-gray-400" disabled>Завершить</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="analysis-section" class="scroll-mt-10 pt-10">
+                     <div class="mb-8">
+                        <h3 class="text-3xl font-bold text-gray-800 mb-2">📊 Анализ диалога</h3>
+                        <p class="text-gray-600 leading-relaxed">Получите подробный разбор вашего диалога с ИИ-тренажера.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+                        <h4 class="text-xl font-bold text-gray-800 mb-4">Результат диалога из тренажера</h4>
+                        <div id="analysis-output" class="mt-2 hidden">
+                            <div id="analysis-result-content" class="p-4 bg-gray-50 border rounded-lg space-y-4"></div>
+                            <button id="restart-btn" class="mt-4 bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700">Начать обучение сначала</button>
+                        </div>
+                         <p id="analysis-placeholder" class="text-gray-500">Здесь появится анализ после завершения диалога в ИИ-тренажере.</p>
+                    </div>
+                </section>
+
+                <section id="library-section" class="scroll-mt-10 pt-10">
+                    <div class="mb-8">
+                        <h3 class="text-3xl font-bold text-gray-800 mb-2">📚 Библиотека возражений</h3>
+                        <p class="text-gray-600 leading-relaxed">Готовые ответы на популярные возражения.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+                        <label for="objection-select" class="block text-lg font-medium text-gray-700 mb-3">Выберите возражение из списка:</label>
+                        <select id="objection-select" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </select>
+                        <div id="objection-answer" class="mt-4 border-t pt-4 min-h-[150px]">
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="objection-generator-section" class="scroll-mt-10 pt-10">
+                     <div class="mb-8">
+                        <h3 class="text-3xl font-bold text-gray-800 mb-2">✨ Генератор возражений</h3>
+                        <p class="text-gray-600 leading-relaxed">Получите стратегию ответа на любое, даже самое неожиданное, возражение клиента.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                        <h4 class="text-xl font-bold text-gray-800 mb-4">Генератор ответа на любое возражение</h4>
+                        <div>
+                            <label for="custom-objection-input" class="block text-sm font-medium text-gray-700 mb-1">Введите возражение клиента, с которым вы столкнулись:</label>
+                            <input type="text" id="custom-objection-input" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Например: 'Почему у вас нет трейд-ин?'">
+                        </div>
+                        <button id="generate-objection-response-btn" class="mt-3 bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700">Получить стратегию ответа</button>
+                        <div id="custom-objection-output" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden"></div>
+                    </div>
+                </section>
+                
+                <section id="knowledge-section" class="scroll-mt-10 pt-10">
+                    <div class="mb-8">
+                        <h3 class="text-3xl font-bold text-gray-800 mb-2">🧠 База знаний</h3>
+                        <p class="text-gray-600 leading-relaxed">Закрепите теорию на практике: разберите реальные кейсы и пройдите тест.</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+                        <h4 class="text-2xl font-bold text-gray-800 mb-4">Кейсы из практики</h4>
+                        <div class="space-y-4">
+                            <p><strong>Кейс 1: "Продажа через видео".</strong> Клиент сомневался, стоит ли ехать 200 км ради осмотра. Менеджер записал короткое видео с обходом машины, показал запуск двигателя и работу фар. Клиент приехал на следующий день и купил автомобиль, сказав, что "видео сняло 90% его сомнений".</p>
+                            <p class="border-t pt-4 mt-4"><strong>Кейс 2: "Карта рисков".</strong> Семья с детьми искала минивэн. Консультант начал диалог с вопроса: "Что вас больше всего пугает в покупке большого б/у автомобиля?". Клиенты рассказали о страхе скрытых проблем с двигателем. Менеджер сконцентрировал презентацию на результатах эндоскопии и гарантии на ДВС, что стало решающим фактором.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+                        <h4 class="text-2xl font-bold text-gray-800 mb-4">✨ Генератор учебных материалов</h4>
+                         <div class="space-y-4">
+                            <div>
+                                <label for="learning-topic-input" class="block text-sm font-medium text-gray-700 mb-1">Задайте тему:</label>
+                                <input type="text" id="learning-topic-input" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Например: клиент торгуется до последнего">
+                            </div>
+                            <div class="flex flex-wrap gap-3 mt-2">
+                                <button data-type="case" class="generate-learning-btn bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700">Сгенерировать кейс</button>
+                                <button data-type="scenario" class="generate-learning-btn bg-green-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-green-700">Сценарий для ролплея</button>
+                                <button data-type="mistakes" class="generate-learning-btn bg-yellow-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-yellow-600">Топ-3 ошибки</button>
+                            </div>
+                        </div>
+                          <div id="learning-material-output" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 hidden"></div>
+                          <div id="learning-material-controls" class="flex gap-3 mt-4 hidden">
+                            <button id="collapse-learning-btn" class="text-sm bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300">Свернуть</button>
+                            <button id="clear-learning-btn" class="text-sm bg-red-100 text-red-800 font-semibold px-4 py-2 rounded-lg hover:bg-red-200">Очистить</button>
+                          </div>
+                    </div>
+                    
+                    <div id="mistakes-section" class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8 scroll-mt-10">
+                        <h4 class="text-2xl font-bold text-gray-800 mb-4">🚫 Разбор частых ошибок</h4>
+                        <div class="space-y-4">
+                            <label for="mistake-select" class="block text-lg font-medium text-gray-700 mb-2">Выберите ошибку из списка:</label>
+                            <select id="mistake-select" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </select>
+                            <div id="mistake-explanation" class="mt-4 border-t pt-4 min-h-[200px]">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="quiz-section" class="card bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden scroll-mt-10">
+                        <div class="card-header p-5 flex justify-between items-center">
+                            <h4 class="text-2xl font-bold text-gray-800">Тест на знание техник</h4>
+                             <div class="flex items-center gap-4">
+                                <button id="generate-quiz-btn" class="bg-gray-200 text-gray-800 font-semibold px-5 py-2 rounded-lg hover:bg-gray-300 text-sm">✨ Новый тест</button>
+                                <span class="chevron text-2xl text-blue-500">▼</span>
+                             </div>
+                        </div>
+                        <div class="card-content">
+                             <div class="px-5 pb-5 border-t border-gray-200">
+                                <p class="text-gray-600 mt-4">Проверьте свои знания. У вас есть право на 2 ошибки. Третья ошибка — и тест начнется заново.</p>
+                                <div id="mistakes-counter" class="mt-2 font-semibold">Ошибок: 0 / 2</div>
+                                <div id="quiz-container" class="space-y-3 mt-4">
+                                </div>
+                                <div id="quiz-final-results" class="mt-6 pt-4 border-t text-center font-bold hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+            </main>
+        </div>
+    </div>
+    
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-red-700 mb-3">Неверно</h3>
+            <div id="modal-explanation" class="text-gray-700 mb-4">
+            </div>
+            <button id="close-modal-btn" class="bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg w-full hover:bg-blue-700">Понятно</button>
+        </div>
+    </div>
+
+    <button id="back-to-top" title="Go to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const callGeminiAPI = async (prompt, systemInstruction = "") => {
+                try {
+                    const response = await fetch('/api/gemini', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt, systemInstruction }),
+                    });
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error("API Error:", errorText);
+                        throw new Error(`API responded with status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    return result.text;
+                } catch (error) {
+                    console.error("Failed to call API:", error);
+                    return "К сожалению, не удалось получить ответ от ИИ-ассистента. Проверьте консоль ошибок.";
+                }
+            };
+
+            const stagesData = [
+                {
+                    id: "stage1",
+                    title: "Этап 1: Цифровое рукопожатие – создание доверия до встречи",
+                    icon: "🤝",
+                    description: "Первое впечатление формируется задолго до того, как клиент переступит порог вашего салона. Ваша коммуникация по телефону или в мессенджере задает тон всей сделке.",
+                    techniques: [
+                        { title: "🎥 Техника: 'Видео-знакомство'", works: "Встаньте рядом с автомобилем, который заинтересовал клиента, и запишите короткое (до 60 секунд) персонализированное видео.", quote: "Иван, добрый день! Это [ваше имя]. Снимаю для вас тот самый Passat. Машина чистая, ждет вас. Приезжайте завтра к 11, все покажу, прокатимся. До связи!", why: ["<strong>Пробивает информационный шум:</strong> Выделяется на фоне десятков безликих сообщений.", "<strong>Создает личную связь:</strong> Клиент видит живого человека, а не просто продавца.", "<strong>Подтверждает реальность:</strong> Он видит реальный автомобиль, а не просто фото из объявления. Доверие возрастает на порядок."] },
+                        { title: "✨ Техника: 'Прозрачность как сервис'", works: "На первом же звонке действуйте на опережение и сами расскажите о мелких недостатках. Это полностью обезоруживает клиента.", quote: "Машина технически в полном порядке, диагностику сделали. Сразу скажу, чтобы всё было по-честному: на заднем бампере есть пара царапин, я их сразу покажу. В остальном — всё чисто, по технике вопросов нет.", why: ["Вы ломаете шаблон 'продавец всегда что-то скрывает'. Клиент понимает, что от него ничего не утаивают, и начинает доверять и той информации, где вы хвалите автомобиль."] }
+                    ]
+                },
+                {
+                    id: "stage2",
+                    title: "Этап 2: Первые 5 минут – разорвать шаблон ожидания",
+                    icon: "⏱️",
+                    description: "Клиент приходит в салон, готовый к обороне. Он ждет давления, уловок и навязчивых вопросов. Ваша задача — в первые минуты полностью разрушить этот стереотип.",
+                    techniques: [
+                        { title: "🎯 Техника: 'Заявление о намерениях'", works: "Вместо стандартного 'Чем могу помочь?', начните встречу с честного определения вашей роли.", quote: "Иван, рад вас видеть. Моя задача простая — помочь вам разобраться в этой машине, чтобы вы приняли правильное для себя решение, каким бы оно ни было. Никакого давления. Давайте спокойно всё посмотрим.", why: ["Вы мгновенно снижаете уровень стресса у клиента. Он понимает, что находится в безопасной среде, где его выбор уважают. Он из 'жертвы' превращается в 'партнера по исследованию'."] },
+                        { title: "🎮 Техника: 'Отдать контроль'", works: "Позвольте клиенту самому определить сценарий встречи.", quote: "С чего вам удобнее начать? Можем с документов, можем сразу к машине. Или, может, у вас есть свои вопросы?", why: ["Человек, который чувствует контроль над ситуацией, более открыт и расслаблен. Вы показываете, что это 'его' встреча, а не 'ваша' продажа."] }
+                    ]
+                },
+                {
+                    id: "stage3",
+                    title: "Этап 3: Совместное исследование",
+                    icon: "🔍",
+                    description: "Забудьте банальные вопросы 'Для чего вам машина?'. Копайте глубже, чтобы понять не потребность, а мечту, страх и жизненный сценарий клиента.",
+                    techniques: [
+                        { title: "🚀 Техника: 'Вопросы о будущем'", works: "Вместо того чтобы говорить о прошлом, говорите о будущем, которое подарит автомобиль.", quote: "Давайте на секунду отвлечемся. Представьте, вы нашли свою идеальную машину. Не обязательно эту. Как изменилась бы ваша жизнь через полгода? Какие поездки, эмоции появились бы?", why: ["Вы переключаете клиента с логического анализа (цена, пробег) на эмоциональный уровень. Вы продаете не транспортное средство, а <strong>будущий опыт</strong>. Это позволяет понять его истинные мотиваторы (комфорт, статус, безопасность, свобода)."] },
+                        { title: "🛡️ Техника: 'Карта рисков'", works: "Открыто спросите о страхах клиента. Это позиционирует вас как его защитника.", quote: "Давайте начистоту, что больше всего напрягает при покупке б/у машины? Может, был неудачный опыт? Расскажите, чтобы мы точно всё проверили и эти моменты исключили.", why: ["Вы показываете, что понимаете риски и готовы помочь их минимизировать. Вы становитесь его союзником против 'плохого' авторынка."] }
+                    ]
+                },
+                {
+                    id: "stage4",
+                    title: "Этап 4: Доказательная презентация",
+                    icon: "📄",
+                    description: "Прекратите просто перечислять опции. Превратите презентацию автомобиля в демонстрацию доказательств его ценности.",
+                    techniques: [
+                        { title: "📂 Техника: 'Презентация через документы'", works: "Начните осмотр не у капота, а в офисе за столом, разложив перед клиентом всю историю автомобиля.", quote: "Предлагаю начать не с железа, а с истории. Вот смотрите: Автотека — чистая, без серьезных ДТП. Вот заказ-наряды с последнего ТО, поменяли всё что нужно. А вот наша диагностика — тормозов еще на 80% хватит.", why: ["Вы создаете фундамент доверия на основе фактов и цифр. К моменту, когда клиент подходит к автомобилю, он уже подсознательно уверен в его хорошем состоянии."] },
+                        { title: "🤫 Техника: 'Молчаливый тест-драйв'", works: "На тест-драйве дайте автомобилю самому 'продать' себя.", quote: "Давайте я сейчас помолчу, а вы просто почувствуете машину. Как она едет, как рулится. Сосредоточьтесь на своих ощущениях.", why: ["Вы даете клиенту возможность сформировать эмоциональную связь с автомобилем без вашего навязчивого комментария. Ощущение 'моей машины' рождается именно в такие моменты."] }
+                    ]
+                },
+                {
+                    id: "stage5",
+                    title: "Этап 5: Навигация в переговорах о ценности",
+                    icon: "💰",
+                    description: "Торг — это не битва за скидку. Это финальный этап обсуждения ценности сделки.",
+                    techniques: [
+                        { title: "💎 Техника: 'Якорение на ценности'", works: "Когда клиент просит скидку, не отвечайте 'да' или 'нет'. Верните разговор к той ценности, которую вы уже задокументировали.", quote: "<strong>Клиент:</strong> 'По цене двигаться будете?'\n<strong>Вы:</strong> 'Понимаю. Давайте прикинем еще раз, за что мы платим. Кроме самой машины, здесь свежее ТО на 45 тысяч и наша годовая гарантия. По сути, вы покупаете спокойствие на год вперед. С учетом этого цена честная.'", why: ["Вы смещаете фокус с 'отнять от цены' на 'понять, за что я плачу'. Клиенту психологически сложно обесценить те выгоды, с которыми он только что согласился."] },
+                        { title: "❓ Техника: 'Условное согласие'", works: "Прежде чем обсуждать скидку, выясните, является ли цена последним и единственным препятствием.", quote: "Хорошо, давайте представим. Если я смогу договориться по цене, это будет финальный вопрос, или есть что-то еще, что вас смущает?", why: ["Этот вопрос — лакмусовая бумажка. Если клиент говорит 'да', вы понимаете, что находитесь на финишной прямой. Если он говорит 'ну, мне еще надо подумать...', значит, реальное возражение не в цене, и вы возвращаетесь к его проработке."] }
+                    ]
+                },
+                {
+                    id: "stage6",
+                    title: "Этап 6: Управление возражениями",
+                    icon: "✅",
+                    description: "Возражение — это не отказ, а скрытый вопрос, требующий ответа. Научитесь видеть в них возможность для углубления доверия.",
+                    techniques: [
+                        { title: "🧠 Техника: 'Зеркальное отражение'", works: "Аккуратно повторите возражение клиента, чтобы показать, что вы его услышали, и выиграть время на обдумывание ответа.", quote: "'Машина слишком дорогая...' &mdash; 'То есть, вы считаете, что цена не соответствует ценности?'<br>'Мне надо подумать...' &mdash; 'Правильно ли я вас понял, вам нужна дополнительная информация, чтобы принять решение?'", why: ["<strong>Показывает эмпатию:</strong> Вы доказываете, что внимательно слушали.", "<strong>Убирает агрессию:</strong> Клиент видит, что вы не спорите, а хотите разобраться в ситуации.", "<strong>Выявляет истинную причину:</strong> Часто за одним возражением кроется совсем другое, и этот метод помогает его обнаружить."] },
+                        { title: "⚖️ Техника: 'Весы решения'", works: "Наглядно покажите клиенту, как выгоды от покупки перевешивают его сомнения. Вы можете сделать это на бумаге или просто в диалоге.", quote: "Иван, давайте так. На одной чаше весов — ваша забота о семье (мы ведь смотрели этот большой внедорожник для поездок за город, верно?) и наше годовое обслуживание. На другой — небольшая царапина на бампере. Что для вас важнее?", why: ["<strong>Визуализирует ценность:</strong> Клиент начинает видеть не только минусы, но и явные, конкретные плюсы.", "<strong>Смещает фокус:</strong> Разговор уходит от 'недостатков' к 'преимуществам'.", "<strong>Позволяет клиенту принять решение самостоятельно:</strong> Вы не давите, а предлагаете ему самому расставить приоритеты."] }
+                    ]
+                },
+                {
+                    id: "stage7",
+                    title: "Этап 7: Закрытие сделки",
+                    icon: "🏁",
+                    description: "Финальный шаг, на котором вы помогаете клиенту принять окончательное, уверенное решение. Ваша задача — не 'дожать', а логично завершить процесс совместной работы.",
+                    techniques: [
+                        { title: "🎯 Техника: 'Выбор без выбора'", works: "Задайте вопрос, который предполагает, что решение о покупке уже принято, и переводит фокус на детали оформления.", quote: "'Отлично, тогда как вам будет удобнее: начнем оформлять документы или сначала поставим машину на подготовку?'", why: ["Снижает стресс принятия главного решения. Клиенту психологически проще выбрать между двумя положительными сценариями, чем между 'купить' и 'не купить'."] },
+                        { title: "🤝 Техника: 'Следующий шаг'", works: "Если клиент все еще сомневается, не давите, а четко и ясно проговорите следующий простой шаг.", quote: "'Понимаю, нужно все взвесить. Давайте сделаем так: я сейчас забронирую для вас этот автомобиль до завтрашнего утра, это вас ни к чему не обязывает. А вы сможете спокойно все обдумать и утром дать ответ. Согласны?'", why: ["Вы сохраняете инициативу, не выглядя навязчивым. Это показывает вашу уверенность и заботу о комфорте клиента, оставляя дверь открытой и снимая с него давление немедленного ответа."] }
+                    ]
+                }
+            ];
+
+            const stagesContainer = document.getElementById("stages-container");
+            if(stagesContainer){
+                stagesData.forEach(stage => {
+                    const section = document.createElement("section");
+                    section.id = stage.id;
+                    section.className = "scroll-mt-10 pt-10";
+
+                    let techniquesHtml = "";
+                    stage.techniques.forEach(tech => {
+                        techniquesHtml += `
+                            <div class="card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                <div class="card-header p-5 flex justify-between items-center">
+                                    <h4 class="text-xl font-bold text-gray-800">${tech.title}</h4>
+                                    <span class="chevron text-2xl text-blue-500">▼</span>
+                                </div>
+                                <div class="card-content">
+                                    <div class="px-5 pb-5 border-t border-gray-200">
+                                        <h5 class="font-bold mt-4 mb-2 text-gray-700">Как это работает:</h5>
+                                        <p class="text-gray-600 mb-4">${tech.works}</p>
+                                        <blockquote>${tech.quote.replace(/\n/g, "<br>")}</blockquote>
+                                        <h5 class="font-bold mt-4 mb-2 text-gray-700">Почему это работает:</h5>
+                                        <ul class="list-disc list-inside space-y-2 text-gray-600">${Array.isArray(tech.why) ? tech.why.map(item => `<li>${item}</li>`).join("") : `<li>${tech.why}</li>`}</ul>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
+
+                    section.innerHTML = `
+                        <div class="mb-8">
+                            <h3 class="text-3xl font-bold text-gray-800 mb-2">${stage.icon} ${stage.title}</h3>
+                            <p class="text-gray-600 leading-relaxed">${stage.description}</p>
+                        </div>
+                        <div class="space-y-4">${techniquesHtml}</div>`;
+                    stagesContainer.appendChild(section);
+                });
+            }
+
+            const mainElement = document.querySelector('main');
+            if (mainElement) {
+                mainElement.addEventListener("click", function (event) {
+                    const cardHeader = event.target.closest(".card-header");
+                    if (cardHeader) {
+                        cardHeader.parentElement.classList.toggle("open");
+                    }
+                });
+            }
+
+            const navToggle = document.querySelector('.nav-toggle');
+            if (navToggle) {
+                navToggle.querySelector('.nav-link-parent').addEventListener('click', () => {
+                    navToggle.classList.toggle('open');
+                });
+            }
+
+            const navLinks = document.querySelectorAll(".nav-link");
+            const sections = document.querySelectorAll("main section");
+
+            const observer = new IntersectionObserver(entries => {
+                let activeFound = false;
+                entries.forEach(entry => {
+                    const id = entry.target.id;
+                    const link = document.querySelector(`a[href="#${id}"]`);
+                    if (entry.isIntersecting && entry.intersectionRatio >= 0.2 && !activeFound) {
+                         navLinks.forEach(nav => nav.classList.remove('active'));
+                         if(link) {
+                            link.classList.add('active');
+                            const parentToggle = link.closest('.nav-toggle');
+                            if (parentToggle && !parentToggle.classList.contains('open')) {
+                                parentToggle.classList.add('open');
+                            }
+                            activeFound = true;
+                         }
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px", threshold: 0.2 });
+
+            sections.forEach(section => {
+                if(section) observer.observe(section);
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetElement = document.querySelector(this.getAttribute('href'));
+                    if(targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            const chatWindow = document.getElementById("chat-window");
+            const chatInput = document.getElementById("chat-input");
+            const chatSendBtn = document.getElementById("chat-send");
+            const improveChatBtn = document.getElementById("improve-chat-btn");
+            const scenarioInput = document.getElementById("scenario-input");
+            const createScenarioBtn = document.getElementById("create-scenario-btn");
+            const randomScenarioBtn = document.getElementById("random-scenario-btn");
+            const scenarioOutput = document.getElementById("scenario-output");
+            const endChatBtn = document.getElementById("end-chat-btn");
+            const analysisOutput = document.getElementById("analysis-output");
+            const analysisResultContent = document.getElementById("analysis-result-content");
+            const analysisPlaceholder = document.getElementById("analysis-placeholder");
+            const restartBtn = document.getElementById("restart-btn");
+
+            let conversationHistory = "";
+            let currentScenarioSystemPrompt = "";
+
+            const addMessage = (text, sender) => {
+                if (!chatWindow) return;
+                const messageEl = document.createElement("div");
+                messageEl.className = `chat-bubble ${sender === 'user' ? 'user-bubble' : 'ai-bubble'}`;
+                messageEl.textContent = text;
+                chatWindow.appendChild(messageEl);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            };
+
+            const resetChat = () => {
+                if(chatWindow) chatWindow.innerHTML = "";
+                conversationHistory = "";
+                if(chatInput) chatInput.disabled = true;
+                if(chatSendBtn) chatSendBtn.disabled = true;
+                if(improveChatBtn) improveChatBtn.disabled = true;
+                if(endChatBtn) endChatBtn.disabled = true;
+                if(chatInput) chatInput.value = "";
+            };
+
+            const resetAll = () => {
+                resetChat();
+                if(scenarioOutput) {
+                    scenarioOutput.textContent = "";
+                    scenarioOutput.classList.add("hidden");
+                }
+                if(analysisOutput) analysisOutput.classList.add("hidden");
+                if(analysisPlaceholder) analysisPlaceholder.classList.remove("hidden");
+                if(analysisResultContent) analysisResultContent.innerHTML = "";
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            };
+            
+            const generateAndStartScenario = async (prompt = "") => {
+                resetChat();
+                if(scenarioOutput) {
+                    scenarioOutput.classList.remove("hidden");
+                    scenarioOutput.innerHTML = '<div class="loader mx-auto"></div>';
+                }
+                if(createScenarioBtn) createScenarioBtn.disabled = true;
+                if(randomScenarioBtn) randomScenarioBtn.disabled = true;
+                
+                const dialogueCard = document.getElementById('dialogue-card');
+                if (dialogueCard) dialogueCard.classList.add('open');
+                
+                const systemPrompt = "Ты — ассистент для тренажера по продажам. Создай краткий (2-3 предложения) сценарий-персону для ролевой игры по продаже б/у авто. Укажи потребности, характер и возможные возражения. Начинай ответ со слов 'Ваш клиент:'.";
+                const userPrompt = prompt ? `Создай сценарий на основе подсказки: "${prompt}"` : "Создай случайный сценарий для продажи б/у автомобиля.";
+                
+                const scenarioText = await callGeminiAPI(userPrompt, systemPrompt);
+                if(scenarioOutput) scenarioOutput.textContent = scenarioText;
+                
+                currentScenarioSystemPrompt = `Ты — ИИ-собеседник в тренажере по продажам. Твоя задача — отыгрывать роль клиента в соответствии со сценарием. Говори просто, по-человечески, на русском языке, короткими фразами. Будь последовательным в своей роли. Сценарий: "${scenarioText}"`;
+                
+                addMessage("Здравствуйте! Чем могу помочь?", "user");
+                conversationHistory = `Продавец: Здравствуйте! Чем могу помочь?`;
+
+                const firstReplyPrompt = `На основе этого сценария: "${scenarioText}", напиши одну короткую, естественную стартовую фразу для клиента, который заходит в автосалон. Только сама фраза, без лишних слов.`;
+                const firstReply = await callGeminiAPI(firstReplyPrompt);
+                
+                addMessage(firstReply, "ai");
+                conversationHistory += `\nКлиент: ${firstReply}`;
+                
+                if(chatInput) chatInput.disabled = false;
+                if(chatSendBtn) chatSendBtn.disabled = false;
+                if(improveChatBtn) improveChatBtn.disabled = false;
+                if(endChatBtn) endChatBtn.disabled = false;
+                if(chatInput) chatInput.focus();
+                if(createScenarioBtn) createScenarioBtn.disabled = false;
+                if(randomScenarioBtn) randomScenarioBtn.disabled = false;
+            };
+
+            if(createScenarioBtn) createScenarioBtn.addEventListener("click", () => {
+                if (scenarioInput.value.trim() === "") {
+                    scenarioInput.classList.add('border-red-500', 'focus:ring-red-500');
+                    scenarioInput.placeholder = "Пожалуйста, опишите клиента";
+                    setTimeout(() => {
+                        scenarioInput.classList.remove('border-red-500', 'focus:ring-red-500');
+                        scenarioInput.placeholder = "Например: молодая семья ищет внедорожник";
+                    }, 2000);
+                    return;
+                }
+                generateAndStartScenario(scenarioInput.value);
+            });
+
+            if(randomScenarioBtn) randomScenarioBtn.addEventListener("click", () => {
+                if(scenarioInput) scenarioInput.value = "";
+                generateAndStartScenario();
+            });
+
+            const handleChatSend = async () => {
+                if (!chatInput || !currentScenarioSystemPrompt) return;
+                const userMessage = chatInput.value.trim();
+                if (!userMessage) return;
+                
+                addMessage(userMessage, "user");
+                chatInput.value = "";
+                chatInput.disabled = true;
+                if(chatSendBtn) chatSendBtn.disabled = true;
+                if(improveChatBtn) improveChatBtn.disabled = true;
+                if(endChatBtn) endChatBtn.disabled = true;
+
+                const loaderBubble = document.createElement("div");
+                loaderBubble.className = "chat-bubble ai-bubble";
+                loaderBubble.innerHTML = '<div class="loader"></div>';
+                if(chatWindow) {
+                    chatWindow.appendChild(loaderBubble);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
+
+                conversationHistory += `\nПродавец: ${userMessage}`;
+                
+                const aiPrompt = conversationHistory + "\nКлиент:";
+                const aiResponse = await callGeminiAPI(aiPrompt, currentScenarioSystemPrompt);
+                
+                if(chatWindow) chatWindow.removeChild(loaderBubble);
+                addMessage(aiResponse, "ai");
+                conversationHistory += `\nКлиент: ${aiResponse}`;
+
+                chatInput.disabled = false;
+                if(chatSendBtn) chatSendBtn.disabled = false;
+                if(improveChatBtn) improveChatBtn.disabled = false;
+                if(endChatBtn) endChatBtn.disabled = false;
+                chatInput.focus();
+            };
+
+            if(chatSendBtn) chatSendBtn.addEventListener("click", handleChatSend);
+            if(chatInput) chatInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") handleChatSend();
+            });
+            
+            if(improveChatBtn) improveChatBtn.addEventListener('click', async () => {
+                if (!chatInput) return;
+                const currentText = chatInput.value.trim();
+                if (!currentText) return;
+
+                chatInput.disabled = true;
+                improveChatBtn.innerHTML = '<div class="loader"></div>';
+
+                const systemPrompt = "Ты — первоклассный коуч по продажам. Перепиши сообщение продавца клиенту, чтобы оно звучало более убедительно, эмпатично и соответствовало принципам консультативных продаж. Ответ должен быть кратким и естественным. Верни только переписанный текст.";
+                const improvedText = await callGeminiAPI(currentText, systemPrompt);
+
+                chatInput.value = improvedText;
+                chatInput.disabled = false;
+                improveChatBtn.innerHTML = '✨';
+                chatInput.focus();
+            });
+
+            const analyzeDialogue = async (dialogueText, outputElement) => {
+                if (!outputElement) return;
+
+                if (!dialogueText.trim()) {
+                    outputElement.innerHTML = `<p class="text-red-500">Диалог пуст. Пожалуйста, введите текст для анализа.</p>`;
+                    outputElement.classList.remove("hidden");
+                    return;
+                }
+                
+                outputElement.classList.remove("hidden");
+                outputElement.innerHTML = '<div class="loader mx-auto"></div>';
+                
+                const systemPrompt = "Ты опытный коуч по продажам. Дай конкретную обратную связь по диалогу. Раздели отзыв на 'Что получилось отлично 👍' и 'Над чем стоит поработать 🚀'.";
+                const userPrompt = `Проанализируй этот диалог:\n\n${dialogueText}`;
+                
+                const analysisResult = await callGeminiAPI(userPrompt, systemPrompt);
+                
+                outputElement.innerHTML = analysisResult.replace(/\n/g, "<br>");
+            };
+            
+            if (endChatBtn) endChatBtn.addEventListener("click", async () => {
+                if(chatInput) chatInput.disabled = true;
+                if(chatSendBtn) chatSendBtn.disabled = true;
+                if(improveChatBtn) improveChatBtn.disabled = true;
+                endChatBtn.disabled = true;
+                
+                if(chatInput) {
+                    const finalUserMessage = chatInput.value.trim();
+                    if (finalUserMessage) {
+                        addMessage(finalUserMessage, "user");
+                        conversationHistory += `\nПродавец: ${finalUserMessage}`;
+                    }
+                }
+                if(analysisPlaceholder) analysisPlaceholder.classList.add("hidden");
+                await analyzeDialogue(conversationHistory, analysisResultContent);
+                if(analysisOutput) analysisOutput.classList.remove("hidden");
+                const analysisLink = document.querySelector('a[href="#analysis-section"]');
+                if (analysisLink) analysisLink.click();
+            });
+
+            if(restartBtn) restartBtn.addEventListener("click", resetAll);
+
+            const objectionsData = [
+                {
+                    title: "Это слишком дорого",
+                    strategy: 'Сместить фокус с цены на ценность.',
+                    quote: '"Полностью вас понимаю, вопрос цены — один из самых важных. Давайте на секунду отвлечемся от итоговой цифры и посмотрим, что в нее входит. Мы с вами убедились, что у машины чистая история, мы сделали большое ТО перед продажей и даем годовую гарантию. По сути, вы платите не просто за автомобиль, а за уверенность и отсутствие головной боли на ближайший год. Разве это спокойствие не стоит своих денег?"'
+                },
+                {
+                    title: "Мне нужно подумать",
+                    strategy: 'Выяснить истинную причину сомнений.',
+                    quote: '"Конечно, решение важное, и спешить не нужно. Скажите честно, если отбросить необходимость \'подумать\', что-то еще смущает в самом автомобиле или в условиях? Цена? Комплектация?"'
+                },
+                {
+                    title: "Я видел такую же машину, но дешевле",
+                    strategy: 'Сравнивать "яблоки с яблоками", подчеркивая ваши преимущества.',
+                    quote: '"Спасибо, что сказали. А можно уточнить, у того автомобиля тоже есть полная диагностическая карта, подтвержденный пробег и гарантия от дилера? Наша цена гарантирует, что вы просто садитесь и едете."'
+                },
+                {
+                    title: "А вдруг она сломается / Какие гарантии?",
+                    strategy: 'Продемонстрировать все этапы предпродажной подготовки.',
+                    quote: '"Отличный вопрос, безопасность — это главное. Именно поэтому мы проводим полную диагностику по 100+ пунктам. Вот, смотрите отчет. Плюс, на этот автомобиль действует наша годовая техническая гарантия."'
+                },
+                {
+                    title: "Слишком большой пробег",
+                    strategy: 'Сместить фокус с цифр на реальное состояние.',
+                    quote: '"Я согласен, цифра на одометре важна. Но еще важнее, как автомобиль обслуживали. Эта машина прошла все ТО по регламенту, вот сервисная книжка. По состоянию она даст фору многим с пробегом поменьше."'
+                }
+            ];
+
+            const objectionSelect = document.getElementById('objection-select');
+            const objectionAnswer = document.getElementById('objection-answer');
+
+            if (objectionSelect) {
+                objectionsData.forEach((objection, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = objection.title;
+                    objectionSelect.appendChild(option);
+                });
+            }
+
+            const displayObjectionAnswer = (index) => {
+                const selectedObjection = objectionsData[index];
+                if (selectedObjection && objectionAnswer) {
+                    objectionAnswer.innerHTML = `
+                        <p class="text-gray-700 mb-2"><strong>Основная стратегия:</strong> ${selectedObjection.strategy}</p>
+                        <blockquote>${selectedObjection.quote}</blockquote>
+                    `;
+                }
+            };
+
+            if (objectionSelect) {
+                objectionSelect.addEventListener('change', (e) => {
+                    displayObjectionAnswer(e.target.value);
+                });
+            }
+
+            if(objectionsData.length > 0) {
+                displayObjectionAnswer(0);
+            }
+            
+            const customObjectionInput = document.getElementById('custom-objection-input');
+            const generateObjectionResponseBtn = document.getElementById('generate-objection-response-btn');
+            const customObjectionOutput = document.getElementById('custom-objection-output');
+
+            if(generateObjectionResponseBtn) {
+                generateObjectionResponseBtn.addEventListener('click', async () => {
+                    const objection = customObjectionInput.value.trim();
+                    if (!objection) {
+                        customObjectionOutput.innerHTML = `<p class="text-red-500">Пожалуйста, введите возражение.</p>`;
+                        customObjectionOutput.classList.remove('hidden');
+                        return;
+                    }
+                    customObjectionOutput.classList.remove('hidden');
+                    customObjectionOutput.innerHTML = '<div class="loader mx-auto"></div>';
+
+                    const systemPrompt = "Ты — коуч по продажам. Дай развернутый ответ, как менеджеру отработать возражение клиента. Структурируй: 1. **Стратегия:**. 2. **Пример ответа:**. 3. **Почему это работает:**.";
+                    const userPrompt = `Как отработать возражение: "${objection}"?`;
+                    
+                    const responseText = await callGeminiAPI(userPrompt, systemPrompt);
+                    customObjectionOutput.innerHTML = responseText.replace(/\n/g, '<br>');
+                });
+            }
+            
+            const learningTopicInput = document.getElementById('learning-topic-input');
+            const learningMaterialOutput = document.getElementById('learning-material-output');
+            const generateLearningBtns = document.querySelectorAll('.generate-learning-btn');
+            const learningMaterialControls = document.getElementById('learning-material-controls');
+            const collapseLearningBtn = document.getElementById('collapse-learning-btn');
+            const clearLearningBtn = document.getElementById('clear-learning-btn');
+
+            if (generateLearningBtns) {
+                generateLearningBtns.forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const type = btn.dataset.type;
+                        const topic = learningTopicInput.value.trim() || 'любая сложная ситуация в продажах';
+                        
+                        learningMaterialOutput.classList.remove('hidden');
+                        learningMaterialOutput.innerHTML = '<div class="loader mx-auto"></div>';
+
+                        let userPrompt = "";
+                        let systemPrompt = "Ты — эксперт по обучению продажам. Напиши материал для менеджера по продажам б/у авто.";
+
+                        if (type === 'case') {
+                            systemPrompt += " Структурируй: '**Ситуация:**', '**Действия:**', '**Результат:**'.";
+                            userPrompt = `Создай кейс на тему: "${topic}".`;
+                        } else if (type === 'scenario') {
+                            systemPrompt += " Опиши сценарий для ролевой игры. Укажи роли и стартовую ситуацию.";
+                            userPrompt = `Создай сценарий для ролевой игры на тему: "${topic}".`;
+                        } else if (type === 'mistakes') {
+                            systemPrompt += " Сформулируй 3 главных ошибки и как их избежать.";
+                            userPrompt = `Опиши топ-3 ошибки на тему: "${topic}".`;
+                        }
+                        
+                        const materialText = await callGeminiAPI(userPrompt, systemPrompt);
+                        learningMaterialOutput.innerHTML = materialText.replace(/\n/g, '<br>');
+                        
+                        if (learningMaterialControls) {
+                            learningMaterialControls.classList.remove('hidden');
+                        }
+                        if (collapseLearningBtn) {
+                            collapseLearningBtn.textContent = 'Свернуть';
+                        }
+                    });
+                });
+            }
+
+            if (collapseLearningBtn && learningMaterialOutput) {
+                collapseLearningBtn.addEventListener('click', () => {
+                    learningMaterialOutput.classList.toggle('hidden');
+                    if (learningMaterialOutput.classList.contains('hidden')) {
+                        collapseLearningBtn.textContent = 'Развернуть';
+                    } else {
+                        collapseLearningBtn.textContent = 'Свернуть';
+                    }
+                });
+            }
+
+            if (clearLearningBtn && learningTopicInput && learningMaterialOutput && learningMaterialControls) {
+                clearLearningBtn.addEventListener('click', () => {
+                    learningTopicInput.value = '';
+                    learningMaterialOutput.innerHTML = '';
+                    learningMaterialOutput.classList.add('hidden');
+                    learningMaterialControls.classList.add('hidden');
+                });
+            }
+
+            const mistakesData = [
+                {
+                    title: "Ошибка 1: Говорить, а не слушать",
+                    description: "Менеджер 'тараторит' скрипт, не выяснив, что важно клиенту.",
+                    tactic: "'Правило 70/30'. 70% времени говорит клиент. Задавайте открытые вопросы."
+                },
+                {
+                    title: "Ошибка 2: Спорить с клиентом",
+                    description: "Менеджер доказывает, что клиент не прав. Это создает конфликт.",
+                    tactic: "'Присоединись, а потом веди'. Сначала согласитесь с мнением клиента, потом покажите ваши преимущества."
+                },
+                {
+                    title: "Ошибка 3: Давить и торопить",
+                    description: "Фразы 'Скидка только сегодня', 'Надо брать!'. Это вызывает отторжение.",
+                    tactic: "'Создать комфорт'. Помогите клиенту принять уверенное решение. Предложите забронировать машину."
+                },
+                {
+                    title: "Ошибка 4: Не знать свой продукт",
+                    description: "Менеджер 'плавает' в деталях или обманывает. Это убивает доверие.",
+                    tactic: "'Быть экспертом'. Изучите историю каждого автомобиля. Если не знаете — честно скажите и уточните."
+                },
+                {
+                    title: "Ошибка 5: Продавать автомобиль, а не решение",
+                    description: "Фокус на характеристиках, а не на выгодах для клиента.",
+                    tactic: "'Свойство -> Выгода'. Каждую опцию переводите на язык выгоды для конкретного клиента."
+                }
+            ];
+
+            const mistakeSelect = document.getElementById('mistake-select');
+            const mistakeExplanation = document.getElementById('mistake-explanation');
+
+            if (mistakeSelect && mistakeExplanation) {
+                mistakesData.forEach((mistake, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = mistake.title;
+                    mistakeSelect.appendChild(option);
+                });
+
+                const displayMistakeExplanation = (index) => {
+                    const selectedMistake = mistakesData[index];
+                    if (selectedMistake) {
+                        mistakeExplanation.innerHTML = `
+                            <h5 class="font-bold text-gray-800 mb-2">В чем проблема:</h5>
+                            <p class="text-gray-700 mb-4">${selectedMistake.description}</p>
+                            <h5 class="font-bold text-green-700 mb-2">Тактика избегания:</h5>
+                            <p class="text-gray-700">${selectedMistake.tactic}</p>
+                        `;
+                    }
+                };
+
+                mistakeSelect.addEventListener('change', (e) => {
+                    displayMistakeExplanation(e.target.value);
+                });
+                displayMistakeExplanation(0);
+            }
+
+            const quizContainer = document.getElementById('quiz-container');
+            const generateQuizBtn = document.getElementById('generate-quiz-btn');
+            const mistakesCounter = document.getElementById('mistakes-counter');
+            const modal = document.getElementById('feedback-modal');
+            const modalExplanation = document.getElementById('modal-explanation');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const quizFinalResults = document.getElementById('quiz-final-results');
+            
+            let currentQuizData = [];
+            let mistakeCount = 0;
+            const MAX_MISTAKES = 2;
+            
+            const shuffleArray = (array) => {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            };
+
+            const initialQuizData = [
+                {
+                    question: "Клиент выглядит напряженно. С чего начать диалог?",
+                    options: { a: "Спросить про бюджет.", b: "Сказать: 'Моя задача — помочь вам разобраться, без давления'.", c: "Рассказать про самую дорогую машину." },
+                    answer: "b",
+                    technique: "Заявление о намерениях"
+                },
+                {
+                    question: "Клиент: 'Я видел такую же машину дешевле'. Ваш ответ?",
+                    options: { a: "Сказать, что у частников машины хуже.", b: "Спросить, входит ли в ту цену диагностика и гарантия.", c: "Предложить такую же скидку." },
+                    answer: "b",
+                    technique: "Якорение на ценности"
+                },
+                {
+                    question: "Клиент на тест-драйве молчит. Что делать?",
+                    options: { a: "Включить музыку и рассказывать про аудиосистему.", b: "Не мешать и дать 'почувствовать' автомобиль.", c: "Постоянно задавать вопросы: 'Ну как?'" },
+                    answer: "b",
+                    technique: "Молчаливый тест-драйв"
+                }
+            ];
+            
+            const renderQuiz = (quizData) => {
+                if (!quizContainer) return;
+                currentQuizData = shuffleArray([...quizData]).slice(0, 3);
+                mistakeCount = 0;
+                if(mistakesCounter) mistakesCounter.textContent = `Ошибок: 0 / ${MAX_MISTAKES}`;
+                if(quizFinalResults) quizFinalResults.classList.add('hidden');
+                quizContainer.innerHTML = "";
+                
+                currentQuizData.forEach((item, index) => {
+                    let optionsHtml = '';
+                    const shuffledOptions = shuffleArray(Object.entries(item.options));
+                    for(const [key, value] of shuffledOptions) {
+                        optionsHtml += `<label class="block p-2 rounded-md border border-gray-200 hover:bg-gray-50 cursor-pointer"><input type="radio" name="q${index}" value="${key}" class="mr-3"> <span>${value}</span></label>`;
+                    }
+                    quizContainer.innerHTML += `<div class="pt-2" data-question-index="${index}"><h5 class="font-medium text-gray-800 mb-2">${index + 1}. ${item.question}</h5><div class="space-y-2">${optionsHtml}</div></div>`;
+                });
+            };
+            
+            if(generateQuizBtn) {
+                 generateQuizBtn.addEventListener('click', async () => {
+                     if(!quizContainer) return;
+                     quizContainer.innerHTML = '<div class="loader mx-auto"></div>';
+                     generateQuizBtn.disabled = true;
+                     const systemPrompt = `Ты — ассистент для создания тестов. Создай 3 уникальных СИТУАЦИОННЫХ вопроса для проверки техник продаж б/у авто. Для каждого вопроса дай 3 варианта ответа (a, b, c). Укажи ключ "technique". Верни результат в виде валидного JSON-массива.`;
+                     try {
+                        const responseText = await callGeminiAPI("Создай новый тест.", systemPrompt);
+                        const cleanedText = responseText.replace(/^```json\s*|```\s*$/g, '');
+                        const newQuizData = JSON.parse(cleanedText);
+                        renderQuiz(newQuizData.length >= 3 ? newQuizData : initialQuizData);
+                     } catch (error) {
+                        console.error("Failed to parse quiz data:", error);
+                        renderQuiz(initialQuizData);
+                     } finally {
+                        generateQuizBtn.disabled = false;
+                     }
+                });
+            }
+
+            if(quizContainer) {
+                quizContainer.addEventListener('change', async (event) => {
+                    if (event.target.type !== 'radio') return;
+                    const selectedLabel = event.target.parentElement;
+                    const questionBlock = selectedLabel.closest('[data-question-index]');
+                    const questionIndex = parseInt(questionBlock.dataset.questionIndex);
+                    const questionData = currentQuizData[questionIndex];
+                    const selectedValue = event.target.value;
+                    
+                    questionBlock.querySelectorAll('input[type="radio"]').forEach(radio => radio.disabled = true);
+                    
+                    if (selectedValue === questionData.answer) {
+                        selectedLabel.classList.add('correct-answer');
+                    } else {
+                        mistakeCount++;
+                        if(mistakesCounter) mistakesCounter.textContent = `Ошибок: ${mistakeCount} / ${MAX_MISTAKES}`;
+                        selectedLabel.classList.add('incorrect-answer');
+                        const correctRadio = questionBlock.querySelector(`input[value="${questionData.answer}"]`);
+                        if(correctRadio) correctRadio.parentElement.classList.add('correct-answer');
+                        if(modal) modal.classList.add('show');
+                        if(modalExplanation) modalExplanation.innerHTML = '<div class="loader mx-auto"></div>';
+                        const systemPrompt = "Ты — коуч по продажам. Объясни, почему ответ верный, ссылаясь на технику продаж.";
+                        const userPrompt = `Ситуация: "${questionData.question}".\nПравильный ответ: "${questionData.options[questionData.answer]}".\nТехника: "${questionData.technique}".\n\nОбъясни.`;
+                        const explanationText = await callGeminiAPI(userPrompt, systemPrompt);
+                        if(modalExplanation) modalExplanation.innerHTML = explanationText.replace(/\n/g, "<br>");
+                    }
+
+                    const answeredCount = quizContainer.querySelectorAll('input:disabled').length / 3;
+                    if (answeredCount === currentQuizData.length) {
+                         const score = currentQuizData.length - mistakeCount;
+                         const percentage = Math.round((score / currentQuizData.length) * 100);
+                         let resultMessage = 'Стоит еще раз изучить теорию. 🧠';
+                         if (percentage >= 80) resultMessage = 'Отличный результат! 👍';
+                         else if (percentage >= 50) resultMessage = 'Хороший результат, но есть что улучшить. 🚀';
+                         if(quizFinalResults) {
+                            quizFinalResults.innerHTML = `<h4 class="text-xl mb-2">Тест завершен!</h4><p class="text-2xl text-blue-600">${score} из ${currentQuizData.length} (${percentage}%)</p><p class="mt-2 text-gray-600 font-medium">${resultMessage}</p>`;
+                            quizFinalResults.classList.remove('hidden');
+                        }
+                    }
+                });
+            }
+
+            const closeModalAndCheckRestart = () => {
+                if (modal) modal.classList.remove('show');
+                if (mistakeCount > MAX_MISTAKES) {
+                    setTimeout(() => renderQuiz(initialQuizData), 300);
+                }
+            };
+
+            if (closeModalBtn) closeModalBtn.addEventListener('click', closeModalAndCheckRestart);
+            if (modal) modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModalAndCheckRestart();
+            });
+
+            renderQuiz(initialQuizData);
+
+            const backToTopBtn = document.getElementById("back-to-top");
+            if(backToTopBtn) {
+                window.addEventListener("scroll", () => {
+                    if (window.scrollY > 300) backToTopBtn.classList.add("show");
+                    else backToTopBtn.classList.remove("show");
+                });
+                backToTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+            }
+        });
+    </script>
+</body>
+</html>
+
