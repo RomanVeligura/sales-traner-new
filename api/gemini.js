@@ -1,69 +1,71 @@
-// Эта функция будет выполняться на серверах Vercel (Edge Function).
-// Она выступает в роли безопасного посредника между вашим сайтом и Google AI API.
+// api/gemini.js
+// This is a Vercel serverless function that acts as a proxy to the Gemini API.
+// It securely handles the API key, which should be set as an environment variable in Vercel.
 
-export const config = {
-  runtime: 'edge',
-};
+export default async function handler(req, res) {
+  // Set CORS headers to allow requests from any origin
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-export default async function handler(request) {
-  // 1. Получаем данные (промпт) от нашего сайта.
-  const { prompt, systemInstruction } = await request.json();
-
-  // 2. Убеждаемся, что у нас есть API-ключ.
-  // Vercel позволяет безопасно хранить "секреты" (как API ключи)
-  // Вам нужно будет один раз добавить его в настройках вашего проекта на Vercel.
-  // Название переменной: GOOGLE_API_KEY
-  const apiKey = process.env.GOOGLE_API_KEY;
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'API-ключ не найден в переменных окружения Vercel.' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  // Handle preflight requests for CORS
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
   }
-  
-  // 3. Формируем тело запроса к Google AI API.
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-  
-  const payload = {
-    contents: [{ parts: [{ text: prompt }] }],
-  };
 
-  if (systemInstruction) {
-    payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+
+  // Retrieve the API key from environment variables
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.error("GEMINI_API_KEY environment variable not set.");
+    return res.status(500).json({ error: "API key is not configured on the server." });
   }
 
   try {
-    // 4. Отправляем запрос к Google AI.
+    const { prompt, systemInstruction } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required in the request body." });
+    }
+
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+    
+    const payload = {
+      contents: [{ parts: [{ text: prompt }] }],
+    };
+
+    // Add system instruction to the payload if provided
+    if (systemInstruction) {
+      payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+    }
+
+    // Call the Google Gemini API
     const apiResponse = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
+    // Check if the API call was successful
     if (!apiResponse.ok) {
-        const errorBody = await apiResponse.text();
-        console.error('Google AI API Error:', errorBody);
-        return new Response(JSON.stringify({ error: `Ошибка от Google AI API: ${apiResponse.statusText}` }), {
-            status: apiResponse.status,
-            headers: { 'Content-Type': 'application/json' },
-        });
+      const errorText = await apiResponse.text();
+      console.error("Google API Error:", errorText);
+      return res.status(apiResponse.status).json({ error: `An error occurred with the Google API: ${errorText}` });
     }
+
+    const data = await apiResponse.json();
     
-    // 5. Обрабатываем ответ и извлекаем текст.
-    const result = await apiResponse.json();
-    const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    
-    // 6. Отправляем полученный текст обратно на наш сайт.
-    return new Response(JSON.stringify({ text }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // Send the successful response from Gemini back to the client
+    res.status(200).json(data);
 
   } catch (error) {
-    console.error('Ошибка при вызове Vercel Edge Function:', error);
-    return new Response(JSON.stringify({ error: 'Внутренняя ошибка сервера.' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error("Server Error:", error);
+    res.status(500).json({ error: "An internal server error occurred." });
   }
 }
